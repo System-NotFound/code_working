@@ -1,9 +1,29 @@
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useState } from 'react';
+import axios from 'axios';
 const Login = () => {
 
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setemail] = useState('');
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
+    
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        console.log(email)
+        try {
+          const response = await axios.post('http://localhost:8000/api/login/', {
+            email,
+            password,
+          }, {
+            withCredentials: true,
+          });
+          setMessage(response.data.message);
+        } catch (error) {
+          setMessage(error.response?.data?.message || 'An error occurred');
+        }
+      };
     return (
         <>
             <div className="login_container">
@@ -19,8 +39,9 @@ const Login = () => {
                                 </div>
                                 <form>
                                     <div className="loginInfo">
-                                        <label style={{ marginBottom: '5px', fontFamily: 'Roboto, sans-serif', fontWeight: '400' }} for="email">Email</label><br></br>
-                                        <input type="email" id="email" name="email"></input>
+                                        <label style={{ marginBottom: '5px', fontFamily: 'Roboto, sans-serif', fontWeight: '400' }} >Email</label><br></br>
+                                        <input type="email" id="email" name="email" value={email}
+            onChange={(e) => setemail(e.target.value)}></input>
                                     </div>
                                     <div className="loginInfo">
                                         <label
@@ -35,7 +56,9 @@ const Login = () => {
                                         >
                                             <input
                                                 type={showPassword ? 'text' : 'password'}
-                                                name="pwd"
+                                                value={password}
+            onChange={(e) => setPassword(e.target.value)}
+                                                name="password"
                                                 minLength="8"
                                                 style={{
                                                     background: 'transparent',
@@ -54,7 +77,7 @@ const Login = () => {
                                         </span>
                                     </div>
 
-                                    <button className="formsubmit">Login</button>
+                                    <button className="formsubmit" onClick={(e)=>handleSubmit(e)}>Login</button>
                                 </form>
 
                             </div>
